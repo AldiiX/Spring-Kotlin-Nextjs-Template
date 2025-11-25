@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Run Backend" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="stacktemplate.springkotlinnextjs.main" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="cz.aldiix.stacktemplate.springkotlinnextjs.Application" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
