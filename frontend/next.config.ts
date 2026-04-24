@@ -1,17 +1,15 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-    reactCompiler: true,
-
-    // reverse proxy to backend
+    // set reverse proxy for api calls
     async rewrites() {
         return [
             {
-                source: "/api/:path*",
-                destination: "http://localhost:41520/api/:path*",
-            },
-        ];
-    }
+                source: '/api/:path*',
+                destination: 'http://localhost:41520/api/:path*' // Proxy to Backend
+            }
+        ]
+    },
 };
 
 export default nextConfig;

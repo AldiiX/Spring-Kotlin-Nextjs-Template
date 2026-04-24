@@ -1,5 +1,3 @@
-# syntax=docker/dockerfile:1
-
 # ---- backend build stage ----
 FROM eclipse-temurin:24-jdk-alpine AS backend-build
 WORKDIR /app

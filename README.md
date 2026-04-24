@@ -33,6 +33,7 @@ cd backend
 
 - Next.js application for building the UI in React.
 - Ready to call the backend API (e.g. `fetch("/api/...")` when proxied via Nginx).
+- Built-in theme management with `WebThemeProvider.tsx`.
 - Standard Next.js scripts: `npm run dev`, `npm run build`, `npm run start`.
 
 Typical dev usage (outside Docker):
