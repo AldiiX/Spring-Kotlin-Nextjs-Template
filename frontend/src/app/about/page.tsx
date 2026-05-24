@@ -1,9 +1,8 @@
-﻿import style from "./page.module.scss";
-import Link from "next/link"
+import Link from "next/link";
 
-export default function() {
+export default function AboutPage() {
     return <>
         <h1>About</h1>
         <Link href={"/"}>Home</Link>
-    </>
+    </>;
 }

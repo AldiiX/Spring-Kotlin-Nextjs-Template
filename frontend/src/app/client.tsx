@@ -2,9 +2,9 @@
 
 import styles from "./page.module.scss";
 import {useWebTheme} from "@/app/_providers/WebThemeProvider";
-import Link from 'next/link'
+import Link from "next/link";
 
-export default function() {
+export default function Client() {
     const { toggleTheme } = useWebTheme();
 
     return (

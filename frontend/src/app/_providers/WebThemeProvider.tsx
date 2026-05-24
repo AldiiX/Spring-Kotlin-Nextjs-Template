@@ -2,10 +2,12 @@
 
 import React, {
     createContext,
+    useCallback,
     useContext,
     useEffect,
     useMemo,
     useState,
+    useSyncExternalStore,
 } from "react";
 import type { ResolvedWebTheme, WebTheme } from "@/app/_types";
 
@@ -34,14 +36,6 @@ function getSystemTheme(): ResolvedWebTheme {
         : "light";
 }
 
-function resolveTheme(theme: WebTheme): ResolvedWebTheme {
-    if(theme === "auto") {
-        return getSystemTheme();
-    }
-
-    return theme;
-}
-
 function setThemeCookie(theme: WebTheme) {
     document.cookie = `webTheme=${theme}; path=/; max-age=31536000; samesite=lax`;
 }
@@ -50,55 +44,51 @@ function applyTheme(theme: ResolvedWebTheme) {
     document.documentElement.dataset.theme = theme;
 }
 
+function subscribeToSystemTheme(onStoreChange: () => void) {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+
+    mediaQuery.addEventListener("change", onStoreChange);
+
+    return () => {
+        mediaQuery.removeEventListener("change", onStoreChange);
+    };
+}
+
 export function WebThemeProvider({
                                      initialTheme,
                                      initialResolvedTheme,
                                      children,
                                  }: WebThemeProviderProps) {
     const [theme, setThemeState] = useState<WebTheme>(initialTheme);
-    const [resolvedTheme, setResolvedTheme] = useState<ResolvedWebTheme>(initialResolvedTheme);
+    const systemTheme = useSyncExternalStore(
+        subscribeToSystemTheme,
+        getSystemTheme,
+        () => initialResolvedTheme,
+    );
+    const resolvedTheme = useMemo(
+        () => theme === "auto" ? systemTheme : theme,
+        [theme, systemTheme],
+    );
 
     useEffect(() => {
-        const nextResolvedTheme = resolveTheme(theme);
+        applyTheme(resolvedTheme);
+    }, [resolvedTheme]);
 
-        setResolvedTheme(nextResolvedTheme);
-        applyTheme(nextResolvedTheme);
-
-        if(theme !== "auto") {
-            return;
-        }
-
-        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-        const handleSystemThemeChange = () => {
-            const nextSystemTheme = resolveTheme("auto");
-
-            setResolvedTheme(nextSystemTheme);
-            applyTheme(nextSystemTheme);
-        };
-
-        mediaQuery.addEventListener("change", handleSystemThemeChange);
-
-        return () => {
-            mediaQuery.removeEventListener("change", handleSystemThemeChange);
-        };
-    }, [theme]);
-
-    const setTheme = (nextTheme: WebTheme) => {
+    const setTheme = useCallback((nextTheme: WebTheme) => {
         setThemeState(nextTheme);
         setThemeCookie(nextTheme);
-    };
+    }, []);
 
-    const toggleTheme = () => {
+    const toggleTheme = useCallback(() => {
         setTheme(resolvedTheme === "dark" ? "light" : "dark");
-    };
+    }, [resolvedTheme, setTheme]);
 
     const value = useMemo<WebThemeContextValue>(() => ({
         theme,
         resolvedTheme,
         setTheme,
         toggleTheme,
-    }), [theme, resolvedTheme]);
+    }), [theme, resolvedTheme, setTheme, toggleTheme]);
 
     return (
         <WebThemeContext.Provider value={value}>

@@ -1,5 +1,5 @@
 import Client from "@/app/client";
 
-export default function() {
-    return <Client />
+export default function HomePage() {
+    return <Client />;
 }
